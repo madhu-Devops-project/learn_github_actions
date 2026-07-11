@@ -4,9 +4,11 @@ on:
   push:
     branches:
       - main
-  
+jobs:
 
-  runs-on: ubuntu-latest
+  deploy app in VM:
+
+    runs-on: ubuntu-latest
 
   steps:
 
