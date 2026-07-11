@@ -1,34 +1,33 @@
-name : Deploy to VM
+name: Deploy to VM
 
 on:
   push:
     branches:
       - main
+
 jobs:
-
-  deploy app in VM:
-
+  deploy:
+    name: Deploy App to VM
     runs-on: ubuntu-latest
 
-  steps:
+    steps:
+      - name: Deploy to VM
+        uses: appleboy/ssh-action@v1.2.0
 
-    - name: Deploy to VM
-      uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USERNAME }}
+          key: ${{ secrets.VM_SSH_KEY }}
 
-      with:
-        host: ${{ secrets.VM_HOST }}
-        username: ${{ secrets.VM_USERNAME }}
-        key: ${{ secrets.VM_SSH_KEY }}
+          script: |
+            docker pull ${{ secrets.DOCKER_USERNAME }}/flask-cicd-app:latest
 
-        script: |
+            docker stop flask-app || true
 
-          docker pull ${{ secrets.DOCKER_USERNAME }}/flask-cicd-app:latest
+            docker rm flask-app || true
 
-          docker stop flask-app || true
-
-          docker rm flask-app || true
-
-          docker run -d \
-            --name flask-app \
-            -p 5000:5000 \
-            ${{ secrets.DOCKER_USERNAME }}/flask-cicd-app:latest
+            docker run -d \
+              --restart unless-stopped \
+              --name flask-app \
+              -p 5000:5000 \
+              ${{ secrets.DOCKER_USERNAME }}/flask-cicd-app:latest
