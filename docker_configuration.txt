@@ -1,0 +1,66 @@
+Create Docker Hub Repository
+	-> Go to docker hub
+	-> Create an account (if dont have)
+	-> create a repository
+	-> Settings -> create personal access token
+	-> Store username and token(password) in github secrets
+
+
+Install Docker in VM:
+	-> sudo apt install docker.io -y
+	-> sudo systemctl enable docker
+	-> sudo systemctl start docker
+	-> sudo usermod -aG docker $USER
+	   Docker group: By default, the Docker daemon (dockerd) runs as root. Only root or users in the docker group can interact with it.
+	-> to verify: docker ps
+
+
+VM setup:
+	-> On local machine: ssh-keygen -t ed25519 -C "github-actions"
+	   it will generate keys and stored in:
+           ~/.ssh/id_ed25519
+           ~/.ssh/id_ed25519.pub
+
+	-> copy key to VM
+           ssh-copy-id ubuntu@<VM_PUBLIC_IP>
+            
+	   or
+
+	   cat ~/.ssh/id_ed25519.pub
+	   ~/.ssh/authorized_keys
+
+	-> Test SSH
+           ssh ubuntu@<VM_PUBLIC_IP>
+	   It should login without asking password
+
+	-> Add VM host, username, private key in github secrets
+            
+
+
+
+Docker commands:
+
+	-> Run the new container
+	   docker run -d \
+  		--name flask-app \
+  		-p 5000:5000 \
+  		yourusername/flask-cicd-app:latest
+           Explain: 
+		-d: Run in detached (background) mode.
+		--name flask-app: Assign a fixed container name.
+		-p 5000:5000: Map host port 5000 to container port 5000.
+
+	-> Stop the container
+	   docker stop flask-app
+
+	-> Remove the container
+	   docker rm flask-app
+
+	-> Check running containers
+	   docker ps
+
+	-> Shows all containers, including stopped ones
+	   docker ps -a
+
+	-> Check container logs
+	   docker logs container_name    or  docker logs container_id
